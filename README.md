@@ -1,1 +1,2 @@
-# scoreboardTask
+# Description of the scoreboardTask
+
