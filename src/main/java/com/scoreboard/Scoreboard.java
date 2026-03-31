@@ -1,7 +1,9 @@
 package com.scoreboard;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
 
 public class Scoreboard implements ScoreboardService {
     private final List<Match> matches = new ArrayList<>();
@@ -39,13 +41,19 @@ public class Scoreboard implements ScoreboardService {
 
     @Override
     public void finishMatch(String homeTeam, String awayTeam) {
-        // TODO
+        validateTeams(homeTeam, awayTeam);
+
+        Match match = findMatch(homeTeam, awayTeam);
+
+        matches.remove(match);
     }
 
     @Override
     public List<Match> getSummary() {
-        // TODO
-        return new ArrayList<>();
+        return matches.stream()
+                .sorted(Comparator.comparingInt(Match::getTotalScores).reversed()
+                .thenComparing(Comparator.comparingLong(Match::getMatchTime).reversed())
+        ).toList();
     }
 
 
@@ -63,6 +71,9 @@ public class Scoreboard implements ScoreboardService {
         }
         if(homeTeam.isBlank() || awayTeam.isBlank()) {
             throw new IllegalArgumentException("Teams cannot be blank");
+        }
+        if (homeTeam.equals(awayTeam)) {
+            throw new IllegalArgumentException("Teams cannot be the same");
         }
     }
 
